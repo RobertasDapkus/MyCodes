@@ -1,0 +1,327 @@
+#include <iostream>
+#include <time.h>
+#include <iomanip>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+const int eilute = 9;
+const int stulpelis = 9;
+bool pabaiga = true;
+int life = 3;
+
+char laukas[eilute][stulpelis];
+char testas[eilute][stulpelis];
+char paslepta[eilute][stulpelis];
+int hori[5][9] = { 0 };
+int ii = 0, s = 0, e = 0;
+
+vector<int> xasx; int temp;
+vector< vector<int> > xasxx;
+vector<int> band; int laik;
+
+void pcheck(bool& pabaiga);
+void spausdinimas()
+{
+    cout << setw(2) << "  ";
+
+    for (int i = 0; i < eilute; i++)
+    {
+        cout << setw(2) << i + 1;
+    }
+
+    cout << "          " << "HP: " << life << endl;
+
+
+    for (int j = 0; j < eilute; j++)
+    {
+        cout << setw(2) << j + 1;
+        for (int a = 0; a < stulpelis; a++)
+        {
+            if (laukas[j][a] != 'X')
+            {
+                if (laukas[j][a] != '+')
+                {
+                    if (laukas[j][a] == 'T')
+                    {
+                        cout << "\033[32m";
+                        cout << setw(2) << 'X';
+                        cout << "\033[0m";
+                    }
+                    else
+                    {
+                        cout << "\033[31m";
+                        cout << setw(2) << '+';
+                        cout << "\033[0m";
+                    }
+                }
+                else
+                {
+                    cout << setw(2) << paslepta[j][a];
+                }
+            }
+            else
+                cout << setw(2) << paslepta[j][a];
+        }
+        for (int i = 0; i < xasxx.size(); i++)
+        {
+            if (i == j)
+            {
+                for (int m = 0; m < xasxx[i].size(); m++)
+                {
+                    if (xasxx[i][m] != 0)
+                    {
+                        cout << setw(2) << xasxx[i][m];
+                    }
+                }
+
+            }
+
+        }
+        cout << endl;
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        cout << "   ";
+        for (int j = 0; j < stulpelis; j++)
+        {
+            if (hori[i][j] == 0)
+            {
+                cout << "  ";
+            }
+            else
+            {
+                cout << hori[i][j] << " ";
+            }
+        }
+        cout << endl;
+    }
+
+}
+void spausdinimasv2()
+{
+    cout << setw(2) << "  ";
+
+    for (int i = 0; i < eilute; i++)
+    {
+        cout << setw(2) << i + 1;
+    }
+
+    cout << "          " << "HP: " << life << endl;
+
+
+    for (int j = 0; j < eilute; j++)
+    {
+        cout << setw(2) << j + 1;
+        for (int a = 0; a < stulpelis; a++)
+        {
+            if (laukas[j][a] != 'X')
+            {
+                if (laukas[j][a] != '+')
+                {
+                    if (laukas[j][a] == 'T')
+                    {
+                        cout << "\033[32m";
+                        cout << setw(2) << 'X';
+                        cout << "\033[0m";
+                    }
+                    else
+                    {
+                        cout << "\033[32m";
+                        cout << setw(2) << '+';
+                        cout << "\033[0m";
+                    }
+                }
+                else
+                {
+                    cout << "\033[32m";
+                    cout << setw(2) << laukas[j][a];
+                    cout << "\033[0m";
+                }
+            }
+            else
+            {
+                cout << "\033[32m";
+                cout << setw(2) << laukas[j][a];
+                cout << "\033[0m";
+            }
+        }
+        for (int i = 0; i < xasxx.size(); i++)
+        {
+            if (i == j)
+            {
+                for (int m = 0; m < xasxx[i].size(); m++)
+                {
+                    if (xasxx[i][m] != 0)
+                    {
+                        cout << setw(2) << xasxx[i][m];
+                    }
+                }
+
+            }
+
+        }
+        cout << endl;
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        cout << "   ";
+        for (int j = 0; j < stulpelis; j++)
+        {
+            if (hori[i][j] == 0)
+            {
+                cout << "  ";
+            }
+            else
+            {
+                cout << hori[i][j] << " ";
+            }
+        }
+        cout << endl;
+    }
+}
+
+int main()
+{
+    srand(time(0));
+
+    for (int i = 0; i < eilute; i++)
+    {
+        for (int j = 0; j < stulpelis; j++)
+        {
+            laukas[i][j] = '+';
+            paslepta[i][j] = '#';
+        }
+    }
+    for (int j = 0; j < eilute; j++)
+    {
+        for (int a = 0; a < stulpelis; a++)
+        {
+            int ran = rand() % 2;
+            if (ran == 1)
+            {
+                laukas[j][a] = 'X';
+            }
+        }
+    }
+
+    for (int j = 0; j < eilute; j++)
+    {
+        temp = 0;
+        for (int a = 0; a < stulpelis; a++)
+        {
+            if (laukas[j][a] == 'X')
+            {
+                temp++;
+            }
+            else
+            {
+                xasx.push_back(temp);
+                temp = 0;
+            }
+            if (a == stulpelis - 1)
+            {
+                xasx.push_back(temp);
+                temp = 0;
+            }
+        }
+        xasxx.push_back(xasx);
+        xasx.clear();
+    }
+    while (ii != eilute)
+    {
+        laik = 0;
+        for (int j = 0; j < stulpelis; j++)
+        {
+            if (laukas[j][ii] == 'X')
+            {
+                laik++;
+                testas[j][ii] = '$';
+            }
+            else
+            {
+                band.push_back(laik);
+                laik = 0;
+                testas[j][ii] = '`';
+            }
+            if (j == stulpelis - 1)
+            {
+                band.push_back(laik);
+                laik = 0;
+            }
+
+        }
+        for (int i = 0; i < band.size(); i++)
+        {
+            if (band[i] != 0)
+            {
+                hori[s][e] = band[i];
+                s++;
+            }
+        }
+        e++;
+        s = 0;
+        band.clear();
+        ii++;
+    }
+
+    int x1 = 0, y1 = 0;
+    do
+    {
+    pradzia:
+        cout << "\x1B[2J\x1B[H";
+        spausdinimas();
+        pcheck(pabaiga);
+        if (pabaiga == 1)
+        {
+            spausdinimasv2();
+            cout << "LAIMEJAI!!!!!!!!!!!!!!!" << endl;
+            return 0;
+        }
+        if (life == 0)
+        {
+            goto pab;
+        }
+        cout << "Pasirinkite kur spalvinsite." << endl << "Rasykite x: "; cin >> x1; cout << "Rasykite y: "; cin >> y1; cout << '\n';
+        if (x1 <= 0 || x1 > 9 || y1 <= 0 || y1 > 9)
+        {
+            goto pradzia;
+        }
+        if (laukas[x1 - 1][y1 - 1] == 'X' || laukas[x1 - 1][y1 - 1] == 'T')
+        {
+            laukas[x1 - 1][y1 - 1] = 'T';
+            goto pradzia;
+        }
+        else
+        {
+            life--;
+            laukas[x1 - 1][y1 - 1] = 'N';
+            goto pradzia;
+        }
+    } while (life > 0);
+    if (life == 0)
+    {
+    pab:
+        cout << "\x1B[2J\x1B[H";
+        cout << "pasisiukslinai seni, disappointed." << endl;
+        return 0;
+    }
+    return 0;
+}
+void pcheck(bool& pabaiga)
+{
+    for (int i = 0; i < eilute; i++)
+    {
+        for (int j = 0; j < stulpelis; j++)
+        {
+            if (laukas[i][j] == 'X')
+            {
+                pabaiga = 0;
+                return;
+            }
+        }
+    }
+}
