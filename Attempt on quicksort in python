@@ -1,0 +1,115 @@
+import random
+import time
+from random import randrange
+
+class ArrayIns:
+	def __init__(self):	#sukuriamas metodas kuris atstovi private dalis ir gali veikti naudojant klases
+
+		self._theVect = []	#sukuriamas sarasas
+
+	def insert(self, value):	#sudedami skaitmenis i sarasa
+		self._theVect.append(value)	#sudeda elementus
+
+	def quickSort(self):	#surusiuoja elementus
+		self.recQuickSort(0, len(self._theVect) - 1)	#issikvieti rekursyvu rusiavima
+
+	def recQuickSort(self, left, right):	#rekursyvus rusiavimas
+		size = right-left+1
+		if size <= 3:	#rankinis rusiavimas jei sarasas mazas
+			self.manualSort(left, right)
+		else:	#rusiavimas jei jis yra didelis
+			median = self.medianOf3(left, right)
+			partition = self.partitionIt(left, right, median)
+			self.recQuickSort(left, partition-1)	#rusiuoti i kaire
+			self.recQuickSort(partition+1, right)	#rusiuoti i desine
+
+	def medianOf3(self, left, right):
+		center = (left + right)/2
+		#eiliskumas kaires ir vidurio
+		if self._theVect[left] > self._theVect[int(center)]:
+			self.swap(left, center)
+			#eiliskumas kaires ir desines
+		if self._theVect[left] > self._theVect[right]:
+			self.swap(left, right)
+			#eiliskumas vidurio ir desines
+		if self._theVect[int(center)] > self._theVect[right]:
+			self.swap(center, right)
+
+		self.swap(center, right - 1)	#padeda asi desineje
+		return self._theVect[right - 1]	#grazina medianos reiksme
+
+	def swap(self, dex1, dex2):	#pakeicia du elementus
+		self._theVect[int(dex1)], self._theVect[int(dex2)] = self._theVect[int(dex2)], self._theVect[int(dex1)]
+
+	def partitionIt(self, left, right, pivot):
+		leftMark = left	#kaire zyme(after+=)
+		rightMark = right - 1#desine zyme-1 (after -=)
+		while True:
+			leftMark += 1
+			while self._theVect[leftMark] < pivot:	#iesko didesnio
+					leftMark += 1
+			rightMark -= 1
+			while self._theVect[rightMark] > pivot:	#iesko mazesnio
+					rightMark -= 1
+
+			if leftMark >= rightMark:	#jei pasirinkimai susikerta
+				break
+			else: #jei nesusikerta tai
+				self.swap(leftMark, rightMark)	#sukeicia elementus
+		self.swap(leftMark, right - 1)	#grazina asi
+		return leftMark	#grazina asies vieta
+
+	def manualSort(self, left, right):
+		size = right-left+1
+		if size <= 1:
+			return	#nereikalingas rusiavimas
+		if size == 2:
+			if self._theVect[left] > self._theVect[right]:
+				self.swap(left, right)
+			return
+		else:	#veikia jei yra aibes dydis yra mazesnis arba lygus 3
+			if self._theVect[left] > self._theVect[right-1]:
+				self.swap(left, right-1)	#kaire sukeicia su viduriu
+
+			if self._theVect[left] > self._theVect[right]:
+				self.swap(left, right)	#kaire sukeicia su desine(paskutiniu elementu)
+
+			if self._theVect[right-1] > self._theVect[right]:
+				self.swap(right-1, right) 	#viduri sukeicia su desine(paskutiniu elementu)
+
+kvad = 1
+ilg = 100000
+arr = ArrayIns()
+vis = 0
+
+#n = [random.randint(0, amm) for i in range(ilg)]
+#n.sort(reverse=True)
+
+for p in range(5):
+
+	amm = ilg
+
+	print("Descending array size: "+str(ilg))
+
+	for x in range(5):
+		n = [random.randint(0, amm) for i in range(ilg)]
+		n.sort(reverse=True)
+		arr.insert(n)
+
+		vid=0
+		exec_time_sum = 0
+
+		for y in range(10):
+			start = time.time()
+			time.sleep(0.007)
+			arr.quickSort()  # quicksort them
+			exec_time_sum += time.time()-start
+			print("Aibe: "+str(x+1)+" Testas: "+str(y+1)+": Uztruko: "+str(time.time()-start)+" sekundziu")
+
+		vid = exec_time_sum / 10
+		vis += vid
+		print('Array: '+str(x+1)+' took: ' + str(vid) + ' seconds')
+
+	ilg *= 2
+
+print("All arrays took: "+str(vis/5)+" seconds")
