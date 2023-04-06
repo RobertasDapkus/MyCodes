@@ -1,0 +1,65 @@
+import random
+import time
+from random import randrange
+
+def shellsort(arr):
+    n = len(arr)
+
+    # Generate gap sequence using Sedgewick's formula
+    gaps = [1]
+    k = 1
+    while True:
+        gap = 4**k + 3 * 2**(k-1) + 1
+        if gap > n:
+            break
+        gaps.append(gap)
+        k += 1
+
+    # Sort the array with gap sequence
+    for gap in reversed(gaps):
+        for i in range(gap, n):
+            temp = arr[i]
+            j = i
+            while j >= gap and arr[j - gap] > temp:
+                arr[j] = arr[j - gap]
+                j -= gap
+            arr[j] = temp
+
+    return arr
+kvad = 1
+ilg = 100000
+vis = 0
+
+#n = [random.randint(0, amm) for i in range(ilg)]
+#n.sort(reverse=True)
+
+for p in range(5):
+
+	arr = ilg
+
+	print("array size: "+str(ilg))
+
+	for x in range(5):
+		array = [random.randint(0, arr) for i in range(ilg)]
+		#array.sort(reverse=True)
+
+		vid=0
+		exec_time_sum = 0
+
+		for y in range(11):
+			if y==0:
+				shellsort(array)
+			else:
+				start = time.time()
+				time.sleep(0.007)
+				shellsort(array)
+				exec_time_sum += time.time()-start
+				print("Aibe: "+str(x+1)+" Testas: "+str(y)+": Uztruko: "+str(time.time()-start)+" sekundziu")
+
+		vid = exec_time_sum / 10
+		vis += vid
+		print('Array: '+str(x+1)+' took: ' + str(vid) + ' seconds')
+
+	ilg *= 2
+
+print("All arrays took: "+str(vis/5)+" seconds")
