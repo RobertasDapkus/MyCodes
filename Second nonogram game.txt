@@ -1,0 +1,590 @@
+#include <iostream>
+#include <fstream>
+#include <map>
+#include <time.h>
+#include <cmath>
+#include <deque>
+#include <iomanip>
+#include <vector>
+#include <algorithm>
+#include <Windows.h>
+#include <conio.h>
+
+using namespace std;
+
+class board
+{
+protected:
+	fstream level;
+	int hard, n, all, hit, miss, atl, beat, life, sl, x1, y1;
+
+	vector<int> prelenta;
+	vector<vector<int>> lenta;
+
+	vector<int> hkiek;
+	vector<vector<int>> hkiekis;
+
+	vector<int> vkiek;
+	vector<vector<int>> vkiekis;
+
+	vector<vector< int>>test;
+	vector<int> b;
+
+public:
+
+	board() : all(0), beat(0), life(3), sl(0), x1(0), y1(0), hit(0), miss(0) {}
+
+	~board() {}
+
+	void clearas()
+	{
+		system("CLS");
+		lenta.clear();
+		hkiekis.clear();
+		sl = 0;
+		vkiekis.clear();
+		test.clear();
+		hit = 0;
+		miss = 0;
+		all = 0;
+	}
+
+	void ivedimas()
+	{
+		life = 3;
+		cout << "Pasirink sunkuma 1-3 : ";
+		cin >> hard;
+		system("CLS");
+		try
+		{
+			if (hard < 1 || hard>3)
+			{
+				throw 5;
+			}
+		}
+		catch (int x)
+		{
+			cout << endl;
+			cout << "kazka neto ivedei bandyk is naujo :(";
+			ivedimas();
+		}
+		zaidimas();
+	}
+
+	void passed()
+	{
+		if (hard == 1)
+		{
+			n = 5;
+
+			if (beat == 0)
+			{
+				level.open("1_1.txt");
+			}
+			else if (beat == 1)
+			{
+				level.open("1_2.txt");
+			}
+			else if (beat == 2)
+			{
+				level.open("1_3.txt");
+			}
+			else if (beat == 3)
+			{
+				level.open("1_4.txt");
+			}
+			else if (beat == 4)
+			{
+				level.open("1_5.txt");
+			}
+		}
+
+		if (hard == 2)
+		{
+			n = 10;
+
+			if (beat == 0)
+			{
+				level.open("2_1.txt");
+			}
+			else if (beat == 1)
+			{
+				level.open("2_2.txt");
+			}
+			else if (beat == 2)
+			{
+				level.open("2_3.txt");
+			}
+			else if (beat == 3)
+			{
+				level.open("2_4.txt");
+			}
+			else if (beat == 4)
+			{
+				level.open("2_5.txt");
+			}
+		}
+
+		if (hard == 3)
+		{
+			n = 15;
+
+			if (beat == 0)
+			{
+				level.open("3_1.txt");
+			}
+			else if (beat == 1)
+			{
+				level.open("3_2.txt");
+			}
+			else if (beat == 2)
+			{
+				level.open("3_3.txt");
+			}
+			else if (beat == 3)
+			{
+				level.open("3_4.txt");
+			}
+			else if (beat == 4)
+			{
+				level.open("3_5.txt");
+			}
+		}
+	}
+
+	void building()
+	{
+
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				level >> atl;
+				if (atl == 1)
+				{
+					all++;
+					prelenta.push_back(atl);
+				}
+				else
+				{
+					prelenta.push_back(atl);
+				}
+			}
+
+			lenta.push_back(prelenta);
+			prelenta.clear();
+		}
+		int temp = 0;
+		// suskaiciuoja horizontaliai kiek yra
+		for (int i = 0; i < n; i++)
+		{
+			temp = 0;
+			for (int j = 0; j < n; j++)
+			{
+				if (lenta[i][j] == 1)
+				{
+					temp++;
+				}
+				else
+				{
+					hkiek.push_back(temp);
+					temp = 0;
+				}
+				if (j == n - 1)
+				{
+					hkiek.push_back(temp);
+					temp = 0;
+				}
+			}
+			hkiekis.push_back(hkiek);
+			hkiek.clear();
+		}
+
+		// turetu skaiciuot vertikaliai
+		int step = 0;
+		vector<int> tempo;
+		while (step != n)
+		{
+			tempo.clear();
+			temp = 0;
+			for (int j = 0; j < n; j++)
+			{
+				if (lenta[j][step] == 1)
+				{
+					temp++;
+				}
+
+				else
+				{
+					if (temp == 0)
+					{
+
+					}
+					else
+					{
+						tempo.push_back(temp);
+						temp = 0;
+					}
+				}
+
+				if (j == n - 1)
+				{
+
+					if (temp == 0)
+					{
+
+					}
+					else
+					{
+						tempo.push_back(temp);
+						temp = 0;
+					}
+
+				}
+			}
+
+			if (tempo.size() > sl)
+			{
+				sl = tempo.size();
+			}
+
+			vkiekis.push_back(tempo);
+
+			tempo.clear();
+			step++;
+		}
+		for (int j = 0; j < sl; j++)
+		{
+			b.clear();
+			for (int i = 0; i < vkiekis.size(); i++)
+			{
+				if (vkiekis[i].capacity() >= sl)
+				{
+					b.push_back(vkiekis[i][j]);
+				}
+				else if (j + 1 <= vkiekis[i].capacity())
+				{
+					b.push_back(vkiekis[i][j]);
+				}
+				else
+				{
+					b.push_back(0);
+				}
+			}
+			test.push_back(b);
+		}
+		vkiekis.clear();
+		vkiekis = test;
+	}
+
+	void hidden()
+	{
+		for (int i = 0; i < lenta.size(); i++)
+		{
+			//skaiciuoja vertikaliai tvarka
+			cout << setw(3) << i + 1;
+
+			for (int j = 0; j < lenta[i].size(); j++)
+			{
+				//isveda lenteles skaiciukus
+				if (lenta[i][j] == 0 || lenta[i][j] == 1)
+				{
+					cout << setw(3) << '#';
+				}
+				else if (lenta[i][j] == 2)
+				{
+					cout << "\033[32m";
+					cout << setw(3) << '@';
+					cout << "\033[0m";
+				}
+				else
+				{
+					cout << "\033[31m";
+					cout << setw(3) << 'X';
+					cout << "\033[0m";
+				}
+
+			}
+			//isveda suskaiciuotus horizontaliu skaiciukus
+			for (int z = 0; z < hkiekis.size(); z++)
+			{
+				if (z == i)
+				{
+					for (int m = 0; m < hkiekis[i].size(); m++)
+					{
+						if (hkiekis[i][m] != 0)
+						{
+							if (hkiekis[i][m] > 9)
+							{
+								cout << setw(2) << " " << hkiekis[i][m];
+							}
+							else
+							{
+								cout << setw(3) << hkiekis[i][m];
+							}
+						}
+					}
+
+				}
+
+			}
+			cout << endl;
+		}
+	}
+
+	void lost()
+	{
+		char rr;
+		cout << "Pralosiai :(" << endl;
+		cout << "Nori bandyt dar karta ? y/n" << endl;
+		cin >> rr;
+		try
+		{
+			if (rr == 'n')
+			{
+				exit(0);
+			}
+			else if (rr == 'y')
+			{
+				level.close();
+				clearas();
+				ivedimas();
+			}
+			else
+			{
+				throw (rr);
+			}
+
+		}
+		catch (char x)
+		{
+			cout << "Kazka neto irasei :(" << endl;
+			lost();
+		}
+
+	}
+
+	void win4()
+	{
+		system("CLS");
+		char w;
+
+		cout << "Nori bandyt eiti sunkesnius lygius ? y/n" << endl;
+		cin >> w;
+
+		try
+		{
+			if (w == 'n')
+			{
+				exit(0);
+			}
+			else if (w == 'y')
+			{
+				beat = 0;
+
+				level.close();
+				clearas();
+				ivedimas();
+			}
+			else
+			{
+				throw (w);
+			}
+
+		}
+		catch (char x)
+		{
+			cout << "Kazka neto irasei :(" << endl;
+			win4();
+		}
+	}
+
+	void win()
+	{
+		system("CLS");
+		char w;
+		cout << "Laimejai !!!!" << endl;
+		if (beat == 4)
+		{
+			win4();
+		}
+		else
+		{
+			cout << "Nori bandyt eiti i sekanti lygi ? y/n" << endl;
+			cin >> w;
+			try
+			{
+				if (w == 'n')
+				{
+					exit(0);
+				}
+				else if (w == 'y')
+				{
+					beat++;
+
+					level.close();
+					clearas();
+					zaidimas();
+				}
+				else
+				{
+					throw (w);
+				}
+
+			}
+			catch (char x)
+			{
+				cout << "Kazka neto irasei :(" << endl;
+				win();
+			}
+		}
+	}
+
+	void outinimas()
+	{
+		//isclearina viska
+		system("CLS");
+		// atspausdina grazia lentele su visais suskaiciuotais horizontaliai
+		cout << setw(3) << "  ";
+		//skaiciuoja horizontaliai tvarka
+		for (int i = 0; i < n; i++)
+		{
+			cout << setw(3) << i + 1;
+		}
+
+		cout << "          " << "HP: " << life - miss;
+		cout << "      " << "Points : " << hit << ":" << all << endl;
+
+		hidden();
+
+		for (int i = 0; i < vkiekis.size(); i++)
+		{
+			cout << "    ";
+			for (int j = 0; j < vkiekis[i].size(); j++)
+			{
+				if (vkiekis[i][j] == 0)
+				{
+					cout << setw(3) << "  ";
+				}
+				else
+					cout << setw(2) << vkiekis[i][j] << " ";
+			}
+			cout << endl;
+		}
+
+		if (life - miss <= 0)
+		{
+			lost();
+		}
+
+		if (all == hit)
+		{
+			win();
+		}
+	}
+
+	void choicex()
+	{
+		cout << "Pasirinkite kur spalvinsite." << endl << "Rasykite x: ";
+		cin >> x1;
+		try
+		{
+			if (x1<1 || x1>n)
+				throw (x1);
+		}
+		catch (int x)
+		{
+			cout << endl << "Biski netokius skaicius vedi :)" << endl;
+			choicex();
+		}
+		choicey();
+	}
+
+	void choicey()
+	{
+		cout << "Rasykite y: ";
+		cin >> y1; cout << '\n';
+		try
+		{
+			if (y1<1 || y1>n)
+				throw (y1);
+		}
+		catch (int x)
+		{
+			cout << endl << "Biski netokius skaicius vedi :)" << endl;
+			choicey();
+		}
+
+		check();
+	}
+
+	void check()
+	{
+		if (lenta[x1 - 1][y1 - 1] == 1 || lenta[x1 - 1][y1 - 1] == 2)
+		{
+			lenta[x1 - 1][y1 - 1] = 2;
+		}
+
+		else
+		{
+			lenta[x1 - 1][y1 - 1] = 3;
+		}
+		misscount();
+		hitcount();
+		tesimas();
+	}
+
+	void misscount()
+	{
+		miss = 0;
+
+		for (int i = 0; i < lenta.size(); i++)
+		{
+			for (int j = 0; j < lenta[i].size(); j++)
+			{
+				if (lenta[i][j] == 3)
+				{
+					miss++;
+				}
+			}
+		}
+	}
+
+	void hitcount()
+	{
+		hit = 0;
+
+		for (int i = 0; i < lenta.size(); i++)
+		{
+			for (int j = 0; j < lenta[i].size(); j++)
+			{
+				if (lenta[i][j] == 2)
+				{
+					hit++;
+				}
+			}
+		}
+	}
+
+	void tesimas()
+	{
+		outinimas();
+		choicex();
+	}
+
+	void zaidimas()
+	{
+		passed();
+		building();
+		outinimas();
+		choicex();
+	}
+
+};
+
+int main()
+{
+	board objektas;
+	objektas.ivedimas();
+	return 0;
+}
